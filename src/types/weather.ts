@@ -21,8 +21,9 @@ interface IWeather {
 }
 
 export interface WeatherStateProps {
-  fetchWeatherDataPending: boolean;
+  fetchWeatherDataPending: string;
   searchLocation: string;
   location: ILocation;
   current: IWeather;
+  forecast: any;
 }

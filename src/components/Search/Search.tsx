@@ -31,24 +31,23 @@ function Search() {
   };
 
   return (
-    <Box sx={{ width: "652px" }}>
-      <TextField
-        id="searchbox"
-        label="Search"
-        variant="outlined"
-        fullWidth
-        value={searchValue}
-        onChange={handleSearchChange}
-        onKeyPress={handleKeyPress}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
-        }}
-      />
-    </Box>
+    <TextField
+      id="searchbox"
+      label="Search"
+      variant="outlined"
+      fullWidth
+      value={searchValue}
+      onChange={handleSearchChange}
+      onKeyPress={handleKeyPress}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="start">
+            <SearchIcon />
+          </InputAdornment>
+        ),
+      }}
+      sx={{ borderRadius: "20px" }}
+    />
   );
 }
 

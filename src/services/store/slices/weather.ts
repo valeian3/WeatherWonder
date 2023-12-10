@@ -11,7 +11,7 @@ import weatherApiInstance from "services/api";
 import { WeatherStateProps } from "types/weather";
 
 const initialState: WeatherStateProps = {
-  fetchWeatherDataPending: false,
+  fetchWeatherDataPending: "",
   searchLocation: "",
   location: {
     name: "",
@@ -33,6 +33,7 @@ const initialState: WeatherStateProps = {
     },
     uv: 0,
   },
+  forecast: {},
 };
 
 /* fetch current weather */
@@ -42,6 +43,47 @@ export const fetchCurrentWeatherAsync = createAsyncThunk(
     try {
       const response = await weatherApiInstance.get("/current.json", {
         params: { q: location },
+      });
+      return response.data;
+    } catch (error) {
+      dispatch(
+        openSnackbar({ type: "error", message: "Error fetching weather data" })
+      );
+      // Handle specific AxiosError
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response) {
+          // The request was made and the server responded with a status code
+          console.error("Response error:", axiosError.response.data);
+        } else if (axiosError.request) {
+          // The request was made but no response was received
+          console.error("No response received:", axiosError.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error("Request setup error:", axiosError.message);
+        }
+      } else {
+        // Handle other errors
+        console.error("Non-Axios error:", error);
+      }
+
+      // Close the Snackbar after 6 seconds (6000 milliseconds)
+      setTimeout(() => {
+        dispatch(closeSnackbar());
+      }, 6000);
+
+      throw new Error("Error fetching weather data");
+    }
+  }
+);
+
+/* fetch forecast weather */
+export const fetchForecastWeatherAsync = createAsyncThunk(
+  "weather/fetchForecastWeatherAsync",
+  async (location: string, { dispatch }) => {
+    try {
+      const response = await weatherApiInstance.get("/forecast.json", {
+        params: { q: location, days: 5 },
       });
       return response.data;
     } catch (error) {
@@ -88,16 +130,30 @@ const weatherSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchCurrentWeatherAsync.pending, (state) => {
-        state.fetchWeatherDataPending = true;
+        state.fetchWeatherDataPending = "loading";
       })
       .addCase(fetchCurrentWeatherAsync.rejected, (state) => {
-        state.fetchWeatherDataPending = false;
+        state.fetchWeatherDataPending = "fetched";
       })
       .addCase(fetchCurrentWeatherAsync.fulfilled, (state, action) => {
         if (!action.payload) return;
-        state.fetchWeatherDataPending = false;
         state.current = action.payload.current;
         state.location = action.payload.location;
+        state.fetchWeatherDataPending = "fetched";
+      })
+
+      .addCase(fetchForecastWeatherAsync.pending, (state) => {
+        state.fetchWeatherDataPending = "loading";
+      })
+      .addCase(fetchForecastWeatherAsync.rejected, (state) => {
+        state.fetchWeatherDataPending = "fetched";
+      })
+      .addCase(fetchForecastWeatherAsync.fulfilled, (state, action) => {
+        if (!action.payload) return;
+        state.current = action.payload.current;
+        state.forecast = action.payload.forecast;
+        state.location = action.payload.location;
+        state.fetchWeatherDataPending = "fetched";
       });
   },
 });
