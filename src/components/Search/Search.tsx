@@ -1,20 +1,35 @@
-import React, { useState, ChangeEvent, KeyboardEvent } from "react";
+import React, { useEffect, useState, ChangeEvent, KeyboardEvent } from "react";
 
 // mui components
-import { Box, TextField, InputAdornment } from "@mui/material";
+import { TextField, InputAdornment } from "@mui/material";
 
 // mui assets
 import SearchIcon from "@mui/icons-material/Search";
 
 // redux
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // service
-import { setSearchLocation } from "services/store/slices/weather";
+import {
+  setSearchLocation,
+  fetchForecastWeatherAsync,
+} from "services/store/slices/weather";
+
+// types
+import { DefaultRootStateProps } from "types";
 
 function Search() {
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState("");
+
+  const { searchLocation } = useSelector(
+    (state: DefaultRootStateProps) => state.weather
+  );
+
+  useEffect(() => {
+    if (searchLocation !== "")
+      dispatch(fetchForecastWeatherAsync(searchLocation) as any);
+  }, [dispatch, searchLocation]);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);

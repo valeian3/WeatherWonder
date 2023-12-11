@@ -1,50 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 // mui components
 import { Box, Typography } from "@mui/material";
 
 // components
-import Section from "layout/MainLayout/Section";
 import SearchBox from "components/Search/Search";
-import WeatherCard from "components/cards/WeatherCard";
 import ForecastCard from "components/cards/ForecastCard";
 import CustomSnackbar from "components/Snackbar/CustomSnackbar";
+import CurrentWeatherSection from "components/sections/CurrentWeatherSection";
 
 // service
 import { getDayOfWeek } from "services/utils/dateFormat";
-import { fetchForecastWeatherAsync } from "services/store/slices/weather";
 
 // redux
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 // types
 import { DefaultRootStateProps } from "types";
 import { IForecastDay } from "types/weather";
 
 function Home() {
-  const dispatch = useDispatch();
-  const { location, current, forecast, isFetchingWeatherData, searchLocation } =
-    useSelector((state: DefaultRootStateProps) => state.weather);
-
-  useEffect(() => {
-    if (searchLocation !== "")
-      dispatch(fetchForecastWeatherAsync(searchLocation) as any);
-  }, [dispatch, searchLocation]);
+  const { forecast, isFetchingWeatherData } = useSelector(
+    (state: DefaultRootStateProps) => state.weather
+  );
 
   return (
     <>
+      {/* TODO: refactor main section*/}
       <Box
         sx={{
           display: "flex",
           width: "100%",
         }}
       >
-        <Section
-          location={location}
-          current={current}
-          forecast={forecast}
-          isFetchingWeatherData={isFetchingWeatherData}
-        />
+        <CurrentWeatherSection />
+        {/* TODO: refactor forecast section */}
         <Box
           sx={{
             width: "60%",
