@@ -11,7 +11,7 @@ import weatherApiInstance from "services/api";
 import { WeatherStateProps } from "types/weather";
 
 const initialState: WeatherStateProps = {
-  fetchWeatherDataPending: "",
+  isFetchingWeatherData: false,
   searchLocation: "",
   location: {
     name: "",
@@ -33,7 +33,9 @@ const initialState: WeatherStateProps = {
     },
     uv: 0,
   },
-  forecast: {},
+  forecast: {
+    forecastday: [],
+  },
 };
 
 /* fetch current weather */
@@ -130,30 +132,30 @@ const weatherSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchCurrentWeatherAsync.pending, (state) => {
-        state.fetchWeatherDataPending = "loading";
+        state.isFetchingWeatherData = true;
       })
       .addCase(fetchCurrentWeatherAsync.rejected, (state) => {
-        state.fetchWeatherDataPending = "fetched";
+        state.isFetchingWeatherData = false;
       })
       .addCase(fetchCurrentWeatherAsync.fulfilled, (state, action) => {
         if (!action.payload) return;
         state.current = action.payload.current;
         state.location = action.payload.location;
-        state.fetchWeatherDataPending = "fetched";
+        state.isFetchingWeatherData = false;
       })
 
       .addCase(fetchForecastWeatherAsync.pending, (state) => {
-        state.fetchWeatherDataPending = "loading";
+        state.isFetchingWeatherData = true;
       })
       .addCase(fetchForecastWeatherAsync.rejected, (state) => {
-        state.fetchWeatherDataPending = "fetched";
+        state.isFetchingWeatherData = false;
       })
       .addCase(fetchForecastWeatherAsync.fulfilled, (state, action) => {
         if (!action.payload) return;
         state.current = action.payload.current;
         state.forecast = action.payload.forecast;
         state.location = action.payload.location;
-        state.fetchWeatherDataPending = "fetched";
+        state.isFetchingWeatherData = false;
       });
   },
 });

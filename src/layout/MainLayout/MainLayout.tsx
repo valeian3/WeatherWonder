@@ -13,7 +13,7 @@ const Main = styled("main")(() => ({
   width: "100%",
   minHeight: "calc(100vh - 64px)",
   background: "#D7D8F0",
-  flexGrow: 1,
+  // flexGrow: 1, // not needed since there is no side navigation bar
   // padding: "20px",
   marginTop: "64px",
 }));
